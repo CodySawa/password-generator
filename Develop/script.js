@@ -95,6 +95,8 @@ function generateRandomChar() {
     }
   }
 }
+
+
 function generatePassword() {
   chooseCriteria();
   var password = '';
