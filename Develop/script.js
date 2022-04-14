@@ -5,6 +5,11 @@ var upper = false;
 var number = false;
 var symbol = false;
 var run = false;
+var lowerCount = 0;
+var upperCount = 0;
+var numberCount = 0;
+var symbolCount = 0;
+var randomCriteria;
 
 function getRandomLowerCase() {
   return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
@@ -19,7 +24,7 @@ function getRandomNumber() {
 }
 
 function getRandomSymbol() {
-  const symbols = " !\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
+  const symbols = "!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"
   return symbols[Math.floor(Math.random() * symbols.length)];
 }
 
@@ -38,6 +43,7 @@ function chooseCriteria() {
 
 function getPasswordLength() {
   passwordLength = prompt("How many characters do you want your password to be? (must be at least 8 characters and no more than 128 characters)");
+  console.log(passwordLength);
 
   if (passwordLength == null) {
     run = false;
@@ -46,7 +52,6 @@ function getPasswordLength() {
     alert("Invalid input");
     getPasswordLength();
   } else {
-    passwordLength = parseInt(passwordLength);
     if (passwordLength < 8) {
       alert("You need more characters!");
       getPasswordLength();
@@ -62,36 +67,52 @@ function getPasswordLength() {
 }
 
 function generateRandomChar() {
-  var randomChar = '';
-  var randomCriteria = Math.floor(Math.random() * 4);
+  var randomChar;
+  if (lower && (lowerCount == 0)) {
+    randomChar = getRandomLowerCase();
+    lowerCount++;
+    return randomChar;
+  }
+  if (upper && (upperCount == 0)) {
+    randomChar = getRandomUpperCase();
+    upperCount++;
+    return randomChar;
+  }
+  if (number && (numberCount == 0)) {
+    randomChar = getRandomNumber();
+    numberCount++;
+    return randomChar;
+  }
+  if (symbol && (symbolCount == 0)) {
+    randomChar = getRandomSymbol();
+    symbolCount++;
+    return randomChar;
+  }
+  randomCriteria = Math.floor(Math.random() * 4);
   console.log(randomCriteria);
-  if (randomCriteria == 1) {
+  if (randomCriteria == 0) {
     if (lower) {
-      randomChar = getRandomLowerCase();
-      return randomChar;
+      return getRandomLowerCase();
     } else {
-      generateRandomChar();
+      return false;
+    }
+  } else if (randomCriteria == 1) {
+    if (upper) {
+      return getRandomUpperCase();
+    } else {
+      return false;
     }
   } else if (randomCriteria == 2) {
-    if (upper) {
-      randomChar = getRandomUpperCase();
-      return randomChar;
-    } else {
-      generateRandomChar();
-    }
-  } else if (randomCriteria == 3) {
     if (number) {
-      randomChar = getRandomNumber();
-      return randomChar;
+      return getRandomNumber();
     } else {
-      generateRandomChar();
+      return false;
     }
   } else {
     if (symbol) {
-      randomChar = getRandomSymbol();
-      return randomChar;
+      return getRandomSymbol();
     } else {
-      generateRandomChar();
+      return false;
     }
   }
 }
@@ -99,16 +120,19 @@ function generateRandomChar() {
 
 function generatePassword() {
   chooseCriteria();
-  var password = '';
-  var char = '';
+  var password = "";
+  var char;
   while (run) {
-    for (i = 0; i < passwordLength.length; i++) {
+    for (i = 0; i < passwordLength; i++) {
       char = generateRandomChar();
+      while (char == false) {
+        char = generateRandomChar();
+      }
+      console.log(char);
       password = password.concat(char);
     }
     run = false;
   }
-  console.log(password)
   return password;
 }
 
@@ -118,10 +142,14 @@ var generateBtn = document.querySelector("#generate");
 // Write password to the #password input
 function writePassword() {
   var password = generatePassword();
-  var passwordText = document.querySelector("#password");
+  var passwordText = document.getElementById('password');
 
   passwordText.value = password;
 
+  var lowerCount = 0;
+  var upperCount = 0;
+  var numberCount = 0;
+  var symbolCount = 0;
 }
 
 // Add event listener to generate button
